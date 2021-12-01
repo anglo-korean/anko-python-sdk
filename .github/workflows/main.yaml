@@ -1,0 +1,40 @@
+name: main
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build on python ${{ matrix.node-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: |
+          pip install nose2
+          nose2
+
+  publish:
+    if: contains(github.ref, 'refs/tags')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: configure
+        run: |
+          pip install install --upgrade build
+          VERSION=$GITHUB_REF_NAME python -m build
+
+      - name: publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
