@@ -1,11 +1,14 @@
+import os
 import setuptools
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+ver = os.environ.get('VERSION')
+
 setuptools.setup(
-    name="anko-python",
-    version="1.0.0",
+    name="anko-sdk",
+    version=ver,
     author="Anglo Korean",
     author_email="hello@anglo-korean.com",
     description="Python SDK for https://anko-investor.com market forecasts. Signup today!",
@@ -21,6 +24,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    packages=["anko", "anko.proto"],
     python_requires=">=3.6",
+    install_requires=[
+        "grpcio",
+    ],
 )
